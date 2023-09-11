@@ -1,26 +1,15 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Box, useColorModeValue } from "@chakra-ui/react";
+import SidebarWithHeader from "./components/SideBarWithHeader";
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Box minH="100vh" bg={useColorModeValue("gray.100", "gray.900")}>
+      <SidebarWithHeader />
+      <Box ml={{ base: 0, md: 60 }} p="4">
+        <div>Some more content</div>
+      </Box>
+    </Box>
   );
-}
+};
 
 export default App;
