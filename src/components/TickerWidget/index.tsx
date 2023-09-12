@@ -1,4 +1,8 @@
 import { Card, Text, CardBody, Image, HStack, VStack } from "@chakra-ui/react";
+import { useState } from "react";
+import { useEffect } from "react";
+import stockDataService from "../../services/stockTickerService";
+import AutoComplete from "../AutoComplete";
 
 type TickerWidgetProps = {
   stockTicker: string;
@@ -24,29 +28,69 @@ const TickerWidget = ({
   percentChange,
   imageUrl,
 }: TickerWidgetProps) => {
+  const [isStockSelecting, setIsStockSelecting] = useState(false);
+
+  const [data, setData] = useState<TickerWidgetProps>({
+    stockTicker,
+    companyName,
+    price,
+    currency,
+    change,
+    percentChange,
+    imageUrl,
+  });
+
+  const getStockList = async () => {
+    const data = await stockDataService.searchStocksWithName("GAIL");
+    console.log("data :>> ", data);
+    return data;
+  };
+
+  const handleStockSelect = (stock: string) => {
+    console.log("stock :>> ", stock);
+    setIsStockSelecting(false);
+  };
+
+  useEffect(() => {
+    getStockList();
+  });
+
   return (
     <Card maxW="sm">
       <CardBody>
         <HStack>
-          <Image src={imageUrl} height="24px" />
+          <Image src={data.imageUrl} height="24px" />
           <VStack spacing="0" alignItems="flex-start" objectFit="cover">
-            <Text fontSize="14px" fontWeight="700">
-              {stockTicker}
-            </Text>
-            <Text fontSize="12px">{companyName}</Text>
+            {!isStockSelecting && (
+              <Text
+                fontSize="14px"
+                fontWeight="700"
+                onClick={() => setIsStockSelecting(true)}
+              >
+                {data.stockTicker}
+              </Text>
+            )}
+            {isStockSelecting && (
+              <AutoComplete
+                onSelect={handleStockSelect}
+                options={getStockList()}
+              />
+            )}
+
+            <Text fontSize="12px">{data.companyName}</Text>
           </VStack>
         </HStack>
         <HStack width="100%">
           <Text fontSize="28px" fontWeight="700" width="40%">
-            {price} {currency}
+            {data.price} {data.currency}
           </Text>
           <Text
             fontSize="18px"
-            color={change > 0 ? COLOR_GREEN_TICKER : COLOR_RED_TICKER}
+            color={data.change > 0 ? COLOR_GREEN_TICKER : COLOR_RED_TICKER}
           >
-            {change > 0 && UP_ICON}
-            {change < 0 && DOWN_ICON}
-            {percentChange}% ({change})
+            {data.change > 0 && UP_ICON}
+            {data.change < 0 && DOWN_ICON}
+            {data.percentChange}% ({data.change})
           </Text>
         </HStack>
       </CardBody>
