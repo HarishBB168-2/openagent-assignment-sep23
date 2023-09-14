@@ -2,6 +2,7 @@ import { Box, useColorModeValue } from "@chakra-ui/react";
 import SidebarWithHeader from "./components/SideBarWithHeader";
 import TickerWidget from "./components/TickerWidget";
 import WeatherWidget from "./components/WeatherWidget";
+import NewsWidget from "./components/NewsWidget";
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
         flexWrap="wrap"
         gap="3rem"
       >
+        <NewsWidget />
         <TickerWidget />
         <WeatherWidget />
       </Box>
