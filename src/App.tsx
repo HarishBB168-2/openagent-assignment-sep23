@@ -7,7 +7,13 @@ const App = () => {
   return (
     <Box minH="100vh" bg={useColorModeValue("gray.100", "gray.900")}>
       <SidebarWithHeader />
-      <Box ml={{ base: 0, md: 60 }} p="4">
+      <Box
+        ml={{ base: 0, md: 60 }}
+        p="4"
+        display="flex"
+        flexWrap="wrap"
+        gap="3rem"
+      >
         <TickerWidget />
         <WeatherWidget />
       </Box>

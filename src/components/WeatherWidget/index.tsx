@@ -9,10 +9,9 @@ const useStyles = createUseStyles({
     width: "22rem",
     maxWidth: "22rem",
     padding: "1.2rem 1.4rem 1.6rem",
-    borderRadius: "2.2rem",
-    marginTop: "2rem",
-    backgroundColor: "#1040844c",
-    color: "white",
+    borderRadius: "5px",
+    backgroundColor: "white",
+    color: "black",
   },
   forecastHeader: {
     width: "100%",
@@ -25,6 +24,8 @@ const useStyles = createUseStyles({
   forecastHeaderLabel: {
     fontSize: "2rem",
     fontWeight: 700,
+    width: "100%",
+    textAlign: "center",
   },
   forecastDay: {
     display: "flex",
@@ -40,12 +41,11 @@ const useStyles = createUseStyles({
     columnGap: "1rem",
   },
   weatherIcon: {
-    fontSize: "5rem",
+    fontSize: "2rem",
   },
   temperature: {
     fontWeight: "600",
-    fontSize: "5rem",
-    lineHeight: "5rem",
+    fontSize: "2rem",
   },
   autocomplete: {
     background: "white",
@@ -53,6 +53,8 @@ const useStyles = createUseStyles({
     "& .rbt-menu": {
       background: "rgba(255,255,255,0.7)",
     },
+    border: "1px solid black",
+    width: "100%",
   },
   loadingIcon: {
     fontSize: "2rem",
@@ -85,6 +87,8 @@ const WeatherWidget = () => {
   const [weatherData, setWeatherData] = useState<any>();
   const [locationsAutoComplete, setLocationsAutoComplete] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [locationName, setLocationName] = useState("");
+  const [isSearchActive, setIsSearchActive] = useState(false);
 
   useEffect(() => {
     const loadFirstCityData = async () => {
@@ -97,11 +101,13 @@ const WeatherWidget = () => {
   }, []);
 
   const loadDataForCity = async (city: any, latLon: any) => {
+    setLocationName(city);
     setIsLoading(true);
     const weather = await weatherService.getWeatherForCity(city, latLon);
     setWeatherData(weather);
     console.log("weather :>> ", weather);
     setIsLoading(false);
+    setIsSearchActive(false);
   };
 
   const handleLocationChange = async (location: any) => {
@@ -123,16 +129,25 @@ const WeatherWidget = () => {
   return (
     <div className={classes.weekForecast}>
       <div className={classes.forecastHeader}>
-        <Typeahead
-          id="location"
-          options={locationsAutoComplete}
-          labelKey="location"
-          placeholder="Search for a location..."
-          onChange={handleLocationChange}
-          onInputChange={handleLocationInputChange}
-          className={classes.autocomplete}
-          defaultInputValue={DEFAULT_CITY}
-        />
+        {isSearchActive && (
+          <Typeahead
+            id="location"
+            options={locationsAutoComplete}
+            labelKey="location"
+            placeholder="Search for a location..."
+            onChange={handleLocationChange}
+            onInputChange={handleLocationInputChange}
+            className={classes.autocomplete}
+          />
+        )}
+        {!isSearchActive && (
+          <span
+            className={classes.forecastHeaderLabel}
+            onClick={() => setIsSearchActive(true)}
+          >
+            {locationName}
+          </span>
+        )}
         {isLoading && (
           <span className={classes.loadingIcon}>
             <i className="fa-solid fa-circle-notch fa-spin"></i>

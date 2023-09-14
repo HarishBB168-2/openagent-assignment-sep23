@@ -50,7 +50,7 @@ const getDate = () => {
   return `${date.getMonthName().slice(0, 3)}, ${date.getDate()}`;
 };
 
-const parseWeatherDataFromApi = (data: any, forecastData) => {
+const parseWeatherDataFromApi = (data: any, forecastData: any) => {
   return {
     location: data.name,
     weatherToday: "day_clouded",
@@ -66,15 +66,18 @@ const parseWeatherDataFromApi = (data: any, forecastData) => {
   };
 };
 
-const parseForecastDataFromApi = (forecastData, forecastDataDirect) => {
+const parseForecastDataFromApi = (
+  forecastData: any,
+  forecastDataDirect: any
+) => {
   return {
     rain: (forecastData.list[0].pop * 100).toFixed(0).toString() + "%",
-    todayHourlyStats: forecastData.list.slice(0, 4).map((item) => ({
+    todayHourlyStats: forecastData.list.slice(0, 4).map((item: any) => ({
       time: new CustomDate(item.dt * 1000).getHoursMinutes(),
       temperature: parseInt(item.main.temp),
       weather: getSkyFromIcon(item.weather[0].icon),
     })),
-    weekForecast: forecastDataDirect.daily.slice(1).map((item) => ({
+    weekForecast: forecastDataDirect.daily.slice(1).map((item: any) => ({
       day: new CustomDate(item.dt * 1000).getWeekdayName(),
       weather: getSkyFromIcon(item.weather[0].icon),
       temperatureMin: parseInt(item.temp.min),
@@ -83,8 +86,13 @@ const parseForecastDataFromApi = (forecastData, forecastDataDirect) => {
   };
 };
 
-const getWeatherForCity = async (city, latLon = null) => {
+const getWeatherForCity = async (
+  city: string,
+  latLon: { lat: string; lon: string } | null = null
+) => {
   if (!latLon) latLon = await getLatLongForLocation(city);
+
+  if (latLon === null) return;
 
   let { data: forecastData } = await httpService.get(
     forecastDataUrl(latLon.lat, latLon.lon)
@@ -110,7 +118,7 @@ const getLocationListFor = async (query: string) => {
   const url = geoCodingUrl + query;
   const { data } = await httpService.get(url);
 
-  const fData = data.map((i, idx: number) => ({
+  const fData = data.map((i: any, idx: number) => ({
     location: `${i.name}, ${i.country}`,
     lat: i.lat,
     lon: i.lon,

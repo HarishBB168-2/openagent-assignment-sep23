@@ -10,7 +10,18 @@ import {
 import { useState } from "react";
 import { useEffect } from "react";
 import stockDataService from "../../services/stockTickerService";
-import AutoComplete from "../AutoComplete";
+import { createUseStyles } from "react-jss";
+import { Typeahead } from "react-bootstrap-typeahead";
+
+const useStyles = createUseStyles({
+  autocomplete: {
+    background: "white",
+    color: "black",
+    "& .rbt-menu": {
+      background: "rgba(255,255,255,0.7)",
+    },
+  },
+});
 
 type TickerWidgetProps = {
   stockTicker: string;
@@ -32,10 +43,14 @@ const COLOR_GREEN_TICKER = "rgb(8, 153, 129)";
 const COLOR_RED_TICKER = "rgb(242, 54, 69)";
 
 const TickerWidget = () => {
+  const classes = useStyles();
+
   const [isStockSelecting, setIsStockSelecting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const [data, setData] = useState<TickerWidgetProps | null>(null);
+
+  const [stocksAutoComplete, setStocksAutoComplete] = useState([]);
 
   const getStockDataForStock = async (
     stock: string
@@ -61,38 +76,32 @@ const TickerWidget = () => {
     loadInitialData();
   }, []);
 
-  const handleStockSelect = async (stock: SearchItem) => {
-    setIsStockSelecting(false);
-    setIsLoading(true);
-    const data = await stockDataService.getStockData(stock.name);
-    if (data === null) {
-      console.log("Stock data is null");
-      return;
+  const handleStockChange = async (stocks: any) => {
+    if (stocks.length > 0) {
+      const stock = stocks[0];
+      setIsStockSelecting(false);
+      setIsLoading(true);
+      const data = await stockDataService.getStockData(stock.name);
+      if (data === null) {
+        console.log("Stock data is null");
+        setIsLoading(false);
+        return;
+      }
+
+      setData((d) => ({ ...d, stockTicker: stock.name, ...data }));
+      setIsLoading(false);
     }
-
-    setData((d) => ({ ...d, stockTicker: stock.name, ...data }));
-    setIsLoading(false);
   };
 
-  const handleOnSearch = async (searchTerm: string) => {
-    if (searchTerm.trim() === "") return [];
-    const data = await stockDataService.searchStocksWithName(searchTerm);
-    console.log("search data :>> ", data);
-    return data;
-  };
-
-  const formatResult = (item: SearchItem) => {
-    return (
-      <>
-        <span style={{ display: "block", textAlign: "left" }}>
-          {item.name} - {item.info}
-        </span>
-      </>
-    );
+  const handleStockInputChange = async (value: string) => {
+    if (value) {
+      const data = await stockDataService.searchStocksWithName(value);
+      setStocksAutoComplete(data);
+    }
   };
 
   return (
-    <Card maxW="sm">
+    <Card minW="20rem" height="min-content">
       <CardBody>
         <VStack spacing="0" alignItems="flex-start" objectFit="cover">
           {isLoading && (
@@ -110,11 +119,17 @@ const TickerWidget = () => {
             </Text>
           )}
           {!isLoading && isStockSelecting && (
-            <AutoComplete<SearchItem>
-              onSelect={handleStockSelect}
-              formatResult={formatResult}
-              onSearch={handleOnSearch}
-            />
+            <>
+              <Typeahead
+                id="stock"
+                options={stocksAutoComplete}
+                labelKey="name"
+                placeholder="Search for a stock..."
+                onChange={handleStockChange}
+                onInputChange={handleStockInputChange}
+                className={classes.autocomplete}
+              />
+            </>
           )}
 
           <Text fontSize="12px">{data?.companyName}</Text>
