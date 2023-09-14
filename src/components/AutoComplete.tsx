@@ -1,55 +1,34 @@
+import { useState } from "react";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
 
 type AutoCompleteProps<Item> = {
   onSelect: (...args: any[]) => void;
-  options: Item[];
+  formatResult: (...args: any[]) => void;
+  onSearch: (...args: any[]) => Promise<any>;
 };
 
 const AutoComplete = <Item,>({
   onSelect,
-  options,
+  formatResult,
+  onSearch,
 }: AutoCompleteProps<Item>) => {
-  const items = [
-    {
-      id: 0,
-      name: "Cobol",
-    },
-    {
-      id: 1,
-      name: "JavaScript",
-    },
-    {
-      id: 2,
-      name: "Basic",
-    },
-    {
-      id: 3,
-      name: "PHP",
-    },
-    {
-      id: 4,
-      name: "Java",
-    },
-  ];
+  const [options, setOptions] = useState<any[]>([]);
 
-  const handleOnSelect = (item) => {
-    // the item selected
-    console.log(item);
+  const handleOnSearch = async (string: string, results: any[]) => {
+    const data = await onSearch(string);
+    setOptions(data);
+  };
+
+  const handleOnSelect = (item: Item) => {
     onSelect(item);
   };
 
-  const formatResult = (item) => {
-    return (
-      <>
-        <span style={{ display: "block", textAlign: "left" }}>{item.name}</span>
-      </>
-    );
-  };
   return (
     <div style={{ width: "100%" }}>
       <ReactSearchAutocomplete
-        items={items}
+        items={options}
         onSelect={handleOnSelect}
+        onSearch={handleOnSearch}
         autoFocus
         formatResult={formatResult}
         showIcon={false}
@@ -62,7 +41,6 @@ const AutoComplete = <Item,>({
           hoverBackgroundColor: "lightgreen",
           color: "darkgreen",
           fontSize: "12px",
-          fontFamily: "Courier",
           iconColor: "green",
           lineColor: "lightgreen",
           placeholderColor: "darkgreen",

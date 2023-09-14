@@ -1,4 +1,12 @@
-import { Card, Text, CardBody, Image, HStack, VStack } from "@chakra-ui/react";
+import {
+  Card,
+  Text,
+  CardBody,
+  Image,
+  HStack,
+  VStack,
+  Flex,
+} from "@chakra-ui/react";
 import { useState } from "react";
 import { useEffect } from "react";
 import stockDataService from "../../services/stockTickerService";
@@ -8,10 +16,14 @@ type TickerWidgetProps = {
   stockTicker: string;
   companyName: string;
   price: number;
-  currency: string;
   change: number;
   percentChange: number;
-  imageUrl: string;
+};
+
+type SearchItem = {
+  id: number;
+  name: string;
+  info: string;
 };
 
 const UP_ICON = <>&#9652;</>;
@@ -19,78 +31,109 @@ const DOWN_ICON = <>&#9662;</>;
 const COLOR_GREEN_TICKER = "rgb(8, 153, 129)";
 const COLOR_RED_TICKER = "rgb(242, 54, 69)";
 
-const TickerWidget = ({
-  stockTicker,
-  companyName,
-  price,
-  currency,
-  change,
-  percentChange,
-  imageUrl,
-}: TickerWidgetProps) => {
+const TickerWidget = () => {
   const [isStockSelecting, setIsStockSelecting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [data, setData] = useState<TickerWidgetProps>({
-    stockTicker,
-    companyName,
-    price,
-    currency,
-    change,
-    percentChange,
-    imageUrl,
-  });
+  const [data, setData] = useState<TickerWidgetProps | null>(null);
 
-  const getStockList = async () => {
-    const data = await stockDataService.searchStocksWithName("GAIL");
-    console.log("data :>> ", data);
-    return data;
-  };
-
-  const handleStockSelect = (stock: string) => {
-    console.log("stock :>> ", stock);
-    setIsStockSelecting(false);
+  const getStockDataForStock = async (
+    stock: string
+  ): Promise<TickerWidgetProps | null> => {
+    const stockData = await stockDataService.getStockData(stock);
+    if (stockData === null) {
+      console.log("Stock data is null");
+      return null;
+    }
+    return {
+      ...stockData,
+      stockTicker: stock,
+    };
   };
 
   useEffect(() => {
-    getStockList();
-  });
+    const loadInitialData = async () => {
+      setIsLoading(true);
+      const data = await getStockDataForStock("RELIANCE");
+      setData(data);
+      setIsLoading(false);
+    };
+    loadInitialData();
+  }, []);
+
+  const handleStockSelect = async (stock: SearchItem) => {
+    setIsStockSelecting(false);
+    setIsLoading(true);
+    const data = await stockDataService.getStockData(stock.name);
+    if (data === null) {
+      console.log("Stock data is null");
+      return;
+    }
+
+    setData((d) => ({ ...d, stockTicker: stock.name, ...data }));
+    setIsLoading(false);
+  };
+
+  const handleOnSearch = async (searchTerm: string) => {
+    if (searchTerm.trim() === "") return [];
+    const data = await stockDataService.searchStocksWithName(searchTerm);
+    console.log("search data :>> ", data);
+    return data;
+  };
+
+  const formatResult = (item: SearchItem) => {
+    return (
+      <>
+        <span style={{ display: "block", textAlign: "left" }}>
+          {item.name} - {item.info}
+        </span>
+      </>
+    );
+  };
 
   return (
     <Card maxW="sm">
       <CardBody>
-        <HStack>
-          <Image src={data.imageUrl} height="24px" />
-          <VStack spacing="0" alignItems="flex-start" objectFit="cover">
-            {!isStockSelecting && (
-              <Text
-                fontSize="14px"
-                fontWeight="700"
-                onClick={() => setIsStockSelecting(true)}
-              >
-                {data.stockTicker}
-              </Text>
-            )}
-            {isStockSelecting && (
-              <AutoComplete
-                onSelect={handleStockSelect}
-                options={getStockList()}
-              />
-            )}
+        <VStack spacing="0" alignItems="flex-start" objectFit="cover">
+          {isLoading && (
+            <Flex justifyContent="center" width="100%" fontSize="1.5rem">
+              <i className="fa-solid fa-circle-notch fa-spin"></i>
+            </Flex>
+          )}
+          {!isLoading && !isStockSelecting && (
+            <Text
+              fontSize="14px"
+              fontWeight="700"
+              onClick={() => setIsStockSelecting(true)}
+            >
+              {data?.stockTicker}
+            </Text>
+          )}
+          {!isLoading && isStockSelecting && (
+            <AutoComplete<SearchItem>
+              onSelect={handleStockSelect}
+              formatResult={formatResult}
+              onSearch={handleOnSearch}
+            />
+          )}
 
-            <Text fontSize="12px">{data.companyName}</Text>
-          </VStack>
-        </HStack>
+          <Text fontSize="12px">{data?.companyName}</Text>
+        </VStack>
         <HStack width="100%">
           <Text fontSize="28px" fontWeight="700" width="40%">
-            {data.price} {data.currency}
+            {data?.price} ₹
           </Text>
           <Text
             fontSize="18px"
-            color={data.change > 0 ? COLOR_GREEN_TICKER : COLOR_RED_TICKER}
+            color={
+              data?.change && data?.change > 0
+                ? COLOR_GREEN_TICKER
+                : COLOR_RED_TICKER
+            }
           >
-            {data.change > 0 && UP_ICON}
-            {data.change < 0 && DOWN_ICON}
-            {data.percentChange}% ({data.change})
+            {data?.change && data?.change > 0 && UP_ICON}
+            {data?.change && data?.change < 0 && DOWN_ICON}
+            {data?.percentChange.toFixed(2)}% ({data?.change.toFixed(2)})
           </Text>
         </HStack>
       </CardBody>
