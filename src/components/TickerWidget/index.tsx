@@ -18,7 +18,7 @@ const useStyles = createUseStyles({
     background: "white",
     color: "black",
     "& .rbt-menu": {
-      background: "rgba(255,255,255,0.7)",
+      background: "rgba(255,255,255)",
     },
   },
 });
@@ -148,7 +148,7 @@ const TickerWidget = () => {
           >
             {data?.change && data?.change > 0 && UP_ICON}
             {data?.change && data?.change < 0 && DOWN_ICON}
-            {data?.percentChange.toFixed(2)}% ({data?.change.toFixed(2)})
+            {data?.percentChange?.toFixed(2)}% ({data?.change?.toFixed(2)})
           </Text>
         </HStack>
       </CardBody>

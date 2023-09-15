@@ -6,12 +6,12 @@ import { useEffect, useState } from "react";
 const useStyles = createUseStyles({
   container: {
     display: "flex",
+    height: "min-content",
     minWidth: "375px",
     maxWidth: "375px",
     width: "375px",
     flexDirection: "column",
     fontFamily: "'Roboto', sans-serif",
-
     overflow: "hidden",
     position: "relative",
     background: "white",
@@ -67,7 +67,7 @@ const NewsWidget = () => {
       setNewsData(news);
     };
     loadNews();
-  });
+  }, []);
 
   return (
     <div className={classes.container}>

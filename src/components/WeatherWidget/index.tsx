@@ -51,7 +51,7 @@ const useStyles = createUseStyles({
     background: "white",
     color: "black",
     "& .rbt-menu": {
-      background: "rgba(255,255,255,0.7)",
+      background: "rgba(255,255,255)",
     },
     border: "1px solid black",
     width: "100%",
