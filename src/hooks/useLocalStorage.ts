@@ -1,12 +1,16 @@
-import { useEffect, useState } from "react";
+import { Dispatch, useEffect, useState } from "react";
 
 const PREFIX = "chatapp-widget-";
 
-const useLocalStorage = (key: string, initialValue?: any) => {
+const useLocalStorage = (
+  key: string,
+  initialValue?: any
+): [any, Dispatch<any>] => {
   const prefixedKey = PREFIX + key;
   const [value, setValue] = useState(() => {
     const jsonValue = localStorage.getItem(prefixedKey);
-    if (jsonValue != null) return JSON.parse(jsonValue);
+    if (jsonValue != null && jsonValue != "undefined")
+      return JSON.parse(jsonValue);
     if (typeof initialValue === "function") {
       return initialValue();
     } else {
