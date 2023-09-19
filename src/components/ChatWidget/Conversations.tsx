@@ -2,7 +2,13 @@ import { List, ListItem } from "@chakra-ui/react";
 import { useConversations } from "../../contexts/ConversationsProvider";
 
 const Conversations = () => {
-  const { conversations, selectConversationIndex } = useConversations();
+  const { conversations, selectConversationIndex, setIsConversationOpen } =
+    useConversations();
+
+  const handleItemClick = (index: number) => {
+    selectConversationIndex(index);
+    setIsConversationOpen(true);
+  };
 
   return (
     <List overflow="auto" height="100%">
@@ -16,7 +22,7 @@ const Conversations = () => {
           cursor="pointer"
           backgroundColor={conversation.selected ? "whatsapp.500" : "initial"}
           color={conversation.selected ? "white" : "initial"}
-          onClick={() => selectConversationIndex(idx)}
+          onClick={() => handleItemClick(idx)}
         >
           {conversation.recipients.map((r) =>
             typeof r === "string" ? r : r.name
