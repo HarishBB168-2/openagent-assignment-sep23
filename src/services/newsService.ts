@@ -25,7 +25,7 @@ const getNews = async (): Promise<NewsItemType[] | null> => {
     }
     return [];
   } catch {
-    return null;
+    return [];
   }
 };
 
