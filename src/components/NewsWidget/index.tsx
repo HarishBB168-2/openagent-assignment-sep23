@@ -2,6 +2,7 @@ import { createUseStyles } from "react-jss";
 import NewsItem from "./NewsItem";
 import newsService, { NewsItemType } from "../../services/newsService";
 import { useEffect, useState } from "react";
+import { HStack, Spinner } from "@chakra-ui/react";
 
 const useStyles = createUseStyles({
   container: {
@@ -47,6 +48,7 @@ const NewsWidget = () => {
 
   const [newsData, setNewsData] = useState<any>([]);
   const [currentNewsItemIdx, setCurrentNewsItemIdx] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [ticking, setTicking] = useState(true),
     [count, setCount] = useState(0);
@@ -63,8 +65,10 @@ const NewsWidget = () => {
 
   useEffect(() => {
     const loadNews = async () => {
+      setIsLoading(true);
       const news = await newsService.getNews();
       setNewsData(news);
+      setIsLoading(false);
     };
     loadNews();
   }, []);
@@ -72,7 +76,19 @@ const NewsWidget = () => {
   return (
     <div className={classes.container}>
       <div className={`${classes.content}`}>
-        {newsData.length > 0 && (
+        {isLoading && (
+          <HStack>
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="blue.500"
+              size="xl"
+            />
+            <span>Loading news...</span>
+          </HStack>
+        )}
+        {!isLoading && newsData.length > 0 && (
           <NewsItem
             {...newsData[currentNewsItemIdx]}
             onMouseEnter={() => setTicking(false)}
