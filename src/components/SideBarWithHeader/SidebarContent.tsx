@@ -6,15 +6,11 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
-import {
-  FiHome,
-  FiTrendingUp,
-  FiCompass,
-  FiStar,
-  FiSettings,
-} from "react-icons/fi";
+import { FiHome, FiInfo, FiMessageSquare } from "react-icons/fi";
 import NavItem from "./NavItem";
 import { IconType } from "react-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { setPage } from "../../actions";
 
 interface LinkItemProps {
   name: string;
@@ -27,13 +23,14 @@ interface SidebarProps extends BoxProps {
 
 const LinkItems: Array<LinkItemProps> = [
   { name: "Home", icon: FiHome },
-  { name: "Trending", icon: FiTrendingUp },
-  { name: "Explore", icon: FiCompass },
-  { name: "Favourites", icon: FiStar },
-  { name: "Settings", icon: FiSettings },
+  { name: "Contact", icon: FiMessageSquare },
+  { name: "About", icon: FiInfo },
 ];
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+  const pageName = useSelector((state: any) => state.changePage);
+  const dispatch = useDispatch();
+
   return (
     <Box
       transition="3s ease"
@@ -52,7 +49,11 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
       {LinkItems.map((link) => (
-        <NavItem key={link.name} icon={link.icon}>
+        <NavItem
+          key={link.name}
+          icon={link.icon}
+          onClick={() => dispatch(setPage(link.name))}
+        >
           {link.name}
         </NavItem>
       ))}
