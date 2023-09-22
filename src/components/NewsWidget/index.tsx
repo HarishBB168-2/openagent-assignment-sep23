@@ -8,9 +8,9 @@ const useStyles = createUseStyles({
   container: {
     display: "flex",
     height: "min-content",
-    minWidth: "375px",
-    maxWidth: "375px",
-    width: "375px",
+    minWidth: "100%",
+    maxWidth: "100%",
+    width: "100%",
     flexDirection: "column",
     fontFamily: "'Roboto', sans-serif",
     overflow: "hidden",

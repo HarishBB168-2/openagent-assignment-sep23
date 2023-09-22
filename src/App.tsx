@@ -7,6 +7,7 @@ import WeatherWidget from "./components/WeatherWidget";
 import NewsWidget from "./components/NewsWidget";
 import ChatWidget from "./components/ChatWidget";
 import DNDContainer from "./components/common/DNDContainer";
+import AnalyticsWidget from "./components/AnalyticsWidget";
 
 const TRACKING_ID = "G-W7C32RL8LE";
 
@@ -28,6 +29,7 @@ const App = () => {
   }, []);
 
   const [widgets, setWidgets] = useState([
+    { name: "analyticsWidget", data: <AnalyticsWidget /> },
     { name: "chatWidget", data: <ChatWidget /> },
     { name: "newsWidget", data: <NewsWidget /> },
     { name: "tickerWidget", data: <TickerWidget /> },

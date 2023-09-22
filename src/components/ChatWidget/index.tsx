@@ -20,7 +20,7 @@ const ChatWidget = () => {
   );
 
   return (
-    <Card height="500px" width="375px">
+    <Card height="500px" width="100%">
       <CardBody display="flex" flexDir="column">
         {id ? dashboard : <LoginPage onIdSubmit={setId} />}
       </CardBody>

@@ -101,7 +101,7 @@ const TickerWidget = () => {
   };
 
   return (
-    <Card minW="20rem" height="min-content">
+    <Card minW="100%" height="min-content">
       <CardBody>
         <VStack spacing="0" alignItems="flex-start" objectFit="cover">
           {isLoading && (

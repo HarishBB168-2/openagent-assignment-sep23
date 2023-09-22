@@ -21,11 +21,13 @@ const SortableItem = (props: SortableItemProps) => {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    width: "30%",
+    minWidth: "300px",
   };
 
   return (
     <div ref={setNodeRef} style={style}>
-      <Flex m="3" p="2" flexDir="column" alignItems="center">
+      <Flex flexDir="column" alignItems="center">
         <Flex
           p="1"
           bg="white"

@@ -6,8 +6,8 @@ import "../../assets/css/typeahead-bootstrap.css";
 
 const useStyles = createUseStyles({
   weekForecast: {
-    width: "22rem",
-    maxWidth: "22rem",
+    width: "100%",
+    maxWidth: "100%",
     padding: "1.2rem 1.4rem 1.6rem",
     borderRadius: "5px",
     backgroundColor: "white",
